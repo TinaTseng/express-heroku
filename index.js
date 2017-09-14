@@ -86,6 +86,16 @@ app.get('/query-place', function(req, res) {
   })
 })
 
+// homework
+app.get('/homework', function(req, res){
+  let body = {
+    name: "曾子安",
+    email: "zooeytseng@gmail.com"
+  }
+  res.setHeader('Content-Type', 'application/json');
+  res.send(body);
+})
+
 app.listen(port, function () {
   console.log(`Example app listening on port ${port}!`)
 })
