@@ -7,8 +7,11 @@ const port = process.env.PORT || 3000
 
 app.set('view engine', 'ejs')
 
-app.get('/home', function(req,res){
-  res.render('home', { title:'hello world' })
+app.get('/home', function(req, res){
+  res.render('home', {
+    title: 'hello world',
+    menu: ['Features', 'Contact', 'About']
+  });
 })
 
 app.get('/', function (req, res) {
