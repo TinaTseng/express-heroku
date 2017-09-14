@@ -5,7 +5,7 @@ const getAddress = require('./get-address')
 const app = express()
 const port = process.env.PORT || 3000
 
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs') // express支援ejs, jade etc.
 
 app.get('/home', function(req, res){
   res.render('home', {
@@ -28,6 +28,26 @@ app.get('/query-address', function (req, res) {
     console.log('statusCode:', response.statusCode);
     console.log('body:', body);
     res.send(getAddress(JSON.parse(body)))    
+  });
+})
+
+app.get('/query-place', function(req, res){
+  let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+  let options = {
+    url: url,
+    qs: {
+      key: 'AIzaSyBhO2blgJq1SGHskjVhSU6CaV1IogBAdpw',
+      location: '25.025322, 121.523740',
+      radius: '1000',
+      type: 'cafe',
+    },
+    method:'GET'
+  };
+  request(options, function (error, response, body) {
+    console.log('error:', error);
+    console.log('statusCode:', response.statusCode);
+    console.log('body:', body);
+    res.send(body)    
   });
 })
 
