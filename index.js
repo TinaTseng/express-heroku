@@ -31,24 +31,59 @@ app.get('/query-address', function (req, res) {
   });
 })
 
-app.get('/query-place', function(req, res){
-  let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
-  let options = {
-    url: url,
-    qs: {
-      key: 'AIzaSyBhO2blgJq1SGHskjVhSU6CaV1IogBAdpw',
-      location: '25.025322, 121.523740',
-      radius: '1000',
-      type: 'cafe',
-    },
-    method:'GET'
-  };
-  request(options, function (error, response, body) {
-    console.log('error:', error);
-    console.log('statusCode:', response.statusCode);
-    console.log('body:', body);
-    res.send(body)    
-  });
+const getPlaceInfoByGoogle = (location, type) => {
+  let promise = new Promise((resolve, reject) => {
+    let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+    let options = {
+      url: url,
+      qs: {
+        key: 'AIzaSyBhO2blgJq1SGHskjVhSU6CaV1IogBAdpw',
+        location: location,
+        radius: '1000',
+        type: type,
+      },
+      method:'GET'
+    };
+    request(options, function (error, response, body) {
+      if (error) { reject(error) }
+      else { resolve(body) }    
+    });
+  })
+  return promise;
+}
+
+const getPlaceInfoByFacebook = (center) => {
+  let promise = new Promise((resolve, reject) => {
+    let url = 'https://graph.facebook.com/v2.10/search';
+    let options = {
+      url: url,
+      qs: {
+        type: 'place',
+        center: center,
+        access_token: 'EAAMSmojZAWnABAAR3eXG2KDv0dpYh9oIBZCakYJIyyfp56ARl947RCnvrOFPkZBUE4korgZCFZBVUE3eqsaSZBWV7eCz2atfSfoc48tSPziP2noXxmZARsoLmI3mIxsNuLEXh3EqZBzpTepA9mZCQqI6MrZBw8fe259te2nWSvpCJj9nplSx09xldbTuWknY4nSifywJAz52W51gZDZD',
+        fields: 'about,name,checkins,picture',
+      },
+      method:'GET'
+    };
+    request(options, function (error, response, body) {
+      if (error) { reject(error) }
+      else { resolve(body) }    
+    });
+  })
+  return promise;
+}
+
+app.get('/query-place', function(req, res) {
+  let location = req.query.location;
+  let type = req.query.type;
+  let promise1 = getPlaceInfoByGoogle(location, type);
+  let promise2 = getPlaceInfoByFacebook(location);
+  Promise.all([promise1,promise2]).then((result) => {
+    res.send({
+      google: JSON.parse(result[0]),
+      facebook: JSON.parse(result[1])
+    })
+  })
 })
 
 app.listen(port, function () {
