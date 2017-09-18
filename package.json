@@ -5,13 +5,23 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "webpack --watch"
   },
   "author": "ggm",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.2",
     "ejs": "^2.5.7",
     "express": "^4.15.4",
     "request": "^2.81.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^3.6.0"
   }
 }

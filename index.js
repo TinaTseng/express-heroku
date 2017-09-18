@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const request = require('request')
 const getAddress = require('./get-address')
@@ -7,6 +8,23 @@ const port = process.env.PORT || 3000
 
 app.set('view engine', 'ejs') // express支援ejs, jade etc.
 
+// 讓bundle.js可以被瀏覽器讀取
+app.use('/static', express.static(path.resolve(__dirname, 'static')))
+
+// .set: 儲存變數，初始化history參數
+app.set('history',[{
+  address: 'NTU',
+  result: {
+    formatted_address:'羅斯福路四段一號',
+    lat: '123',
+    lng:'456',
+  }
+}])
+
+app.get('/history', function(req, res){
+  res.send(app.get('history'))
+})
+
 app.get('/home', function(req, res){
   res.render('home', {
     title: 'hello world',
@@ -14,8 +32,9 @@ app.get('/home', function(req, res){
   });
 })
 
+// 丟出檔案，也可丟出圖片等
 app.get('/', function (req, res) {
-  res.send('Hello World!')
+  res.sendFile(path.resolve(__dirname, 'views/index.html'))
 })
 
 //https://csiejs911.herokuapp.com/query-address?address=NTU
@@ -27,7 +46,12 @@ app.get('/query-address', function (req, res) {
     console.log('error:', error);
     console.log('statusCode:', response.statusCode);
     console.log('body:', body);
-    res.send(getAddress(JSON.parse(body)))    
+    
+    let result = getAddress(JSON.parse(body))
+    res.send(result)
+    let history = app.get('history')
+    history.push({address,result})
+    app.set('history', history)
   });
 })
 
